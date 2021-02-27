@@ -113,7 +113,7 @@ def main():
     # Parameters
     script_name = os.path.splitext(os.path.basename(sys.argv[0]))[0]
     output_file = None
-    log_file = Path(os.path.expanduser("~")).joinpath(script_name + ".log")
+    log_file = os.devnull
     log_verbose = 0
 
     for opt, arg in opts:
@@ -124,14 +124,13 @@ def main():
             output_file = arg
             print("Setando output: ", output_file)
         elif opt in ( '-l', '--log-level'):
-            log_verbose = arg
+            log_verbose = int(arg)
             print("Setando log_verbose: ", log_verbose)
         elif opt in ( '-f', '--log-file'):
             log_file = arg
             print("Setando log_file: ", log_file)
 
     # Setup logging
-    
     if log_verbose == 0: 
         if (not setup_logging(console_log_output="stdout", console_log_level="warning", console_log_color=True,
                             logfile_file=log_file, logfile_log_level="debug", logfile_log_color=False,
@@ -169,8 +168,8 @@ def main():
             print("Failed to setup logging, aborting.")
             return 1
     else:
-        print("No pasa nada")
-        #logging.basicConfig(format='[%(created)d] [%(threadName)s] [%(levelname)s] - %(message)s', level=logging.DEBUG)
+        #print("No pasa nada")
+        logging.basicConfig(format='[%(created)d] [%(threadName)s] [%(levelname)s] - %(message)s', level=logging.INFO)
 
     # Prueba
     # Log some messages
@@ -188,7 +187,7 @@ def main():
         
     else:
         backup_dir = Path(os.path.expanduser("~")).absolute()
-        logging.warn("Backup file not set, backup to HOME directory")
+        logging.warning("Backup file not set, backup to HOME directory")
 
     #if 
     logging.debug('Backup will be output to a compress file in directory: ' + str(backup_dir))
