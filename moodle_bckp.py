@@ -93,6 +93,10 @@ def setup_logging(console_log_output, console_log_level, console_log_color, logf
     # Success
     return True
 
+def process_retention(retention_policy):
+    "This function processes retention policy parameters"
+    retention_list = str.split(retention_policy,sep=",",maxsplit=5)
+    return(retention_list)
 
 #import gzip
  #from sh import pg_dump
@@ -116,10 +120,11 @@ def main():
     log_file = os.devnull
     log_verbose = 0
     historic = False
+    retention_policy = [100,100,100,100,100] # 100t 100d 100w 100m 100y
 
     # Variables
-    date = datetime.now().strftime("%Y-%m-%d")
-    # Reverse date_obj_from_string = datetime.datetime.strptime(date_time_str, '%Y-%m-%d)
+    date_time = datetime.now().strftime("%Y-%m-%d_%H-%m")
+    # Reverse date_obj_from_string = datetime.datetime.strptime(date_time_str, '%Y-%m-%d_%H-%m)
 
     for opt, arg in opts:
         if opt in ('-h', '--help'):
@@ -135,7 +140,7 @@ def main():
             backup_dir = arg
         elif opt in ( '-r', '--retention'):
             historic = True
-            retention_config = arg
+            retention_policy = arg
             
     # Setup logging
     if log_verbose == 1:
@@ -196,6 +201,8 @@ def main():
 
     if historic == True:
         file_history = fnmatch.filter(os.listdir(backup_dir), '*.tgz')
+    logging.debug(str(date_time))
+    logging.debug(process_retention(retention_policy))
 
     #if output_file != None:
     #    backup_dir = Path(output_file).parent.absolute()
@@ -216,7 +223,7 @@ def main():
     ## test command
     #with gzip.open('backup.gz', 'wb') as f:
     #  pg_dump('-h', 'localhost', '-U', 'postgres', '-F c' , ‘my_dabatase’, _out=f)
-    logging.info('Finished')
+    logging.info('Backup script finished')
 
 if __name__ == "__main__":
     main()
